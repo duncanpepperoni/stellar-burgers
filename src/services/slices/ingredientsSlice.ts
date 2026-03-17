@@ -23,8 +23,11 @@ export const fetchIngredients = createAsyncThunk<
   try {
     const data = await getIngredientsApi();
     return data;
-  } catch (err: any) {
-    return rejectWithValue(err?.message || 'Не удалось загрузить ингредиенты');
+  } catch (err) {
+    const error = err as { message?: string } | null;
+    return rejectWithValue(
+      error?.message || 'Не удалось загрузить ингредиенты'
+    );
   }
 });
 

@@ -31,9 +31,10 @@ export const fetchFeed = createAsyncThunk<
       total: data.total,
       totalToday: data.totalToday
     };
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as { message?: string } | null;
     return rejectWithValue(
-      err?.message || 'Не удалось загрузить ленту заказов'
+      error?.message || 'Не удалось загрузить ленту заказов'
     );
   }
 });

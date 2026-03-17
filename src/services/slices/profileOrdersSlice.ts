@@ -23,9 +23,10 @@ export const fetchProfileOrders = createAsyncThunk<
   try {
     const data = await getOrdersApi();
     return data;
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as { message?: string } | null;
     return rejectWithValue(
-      err?.message || 'Не удалось загрузить заказы пользователя'
+      error?.message || 'Не удалось загрузить заказы пользователя'
     );
   }
 });

@@ -39,8 +39,9 @@ export const registerUser = createAsyncThunk<
     setCookie('accessToken', res.accessToken);
     localStorage.setItem('refreshToken', res.refreshToken);
     return res.user;
-  } catch (err: any) {
-    return rejectWithValue(err?.message || 'Ошибка регистрации');
+  } catch (err) {
+    const error = err as { message?: string } | null;
+    return rejectWithValue(error?.message || 'Ошибка регистрации');
   }
 });
 
@@ -54,8 +55,9 @@ export const loginUser = createAsyncThunk<
     setCookie('accessToken', res.accessToken);
     localStorage.setItem('refreshToken', res.refreshToken);
     return res.user;
-  } catch (err: any) {
-    return rejectWithValue(err?.message || 'Ошибка входа');
+  } catch (err) {
+    const error = err as { message?: string } | null;
+    return rejectWithValue(error?.message || 'Ошибка входа');
   }
 });
 
@@ -67,9 +69,10 @@ export const getUser = createAsyncThunk<
   try {
     const res = await getUserApi();
     return res.user;
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as { message?: string } | null;
     return rejectWithValue(
-      err?.message || 'Не удалось получить данные пользователя'
+      error?.message || 'Не удалось получить данные пользователя'
     );
   }
 });
@@ -82,9 +85,10 @@ export const updateUser = createAsyncThunk<
   try {
     const res = await updateUserApi(userData);
     return res.user;
-  } catch (err: any) {
+  } catch (err) {
+    const error = err as { message?: string } | null;
     return rejectWithValue(
-      err?.message || 'Не удалось обновить данные пользователя'
+      error?.message || 'Не удалось обновить данные пользователя'
     );
   }
 });
@@ -96,8 +100,9 @@ export const logoutUser = createAsyncThunk<void, void, { rejectValue: string }>(
       await logoutApi();
       deleteCookie('accessToken');
       localStorage.removeItem('refreshToken');
-    } catch (err: any) {
-      return rejectWithValue(err?.message || 'Ошибка выхода');
+    } catch (err) {
+      const error = err as { message?: string } | null;
+      return rejectWithValue(error?.message || 'Ошибка выхода');
     }
   }
 );
@@ -114,8 +119,11 @@ export const checkUserAuth = createAsyncThunk<
     }
     const res = await getUserApi();
     return res.user;
-  } catch (err: any) {
-    return rejectWithValue(err?.message || 'Не удалось проверить авторизацию');
+  } catch (err) {
+    const error = err as { message?: string } | null;
+    return rejectWithValue(
+      error?.message || 'Не удалось проверить авторизацию'
+    );
   }
 });
 

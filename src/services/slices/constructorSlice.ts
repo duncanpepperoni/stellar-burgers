@@ -67,13 +67,9 @@ export const createOrder = createAsyncThunk<
     };
 
     return order;
-  } catch (err: any) {
-    const message =
-      (err &&
-        typeof err === 'object' &&
-        'message' in err &&
-        (err as any).message) ||
-      'Не удалось оформить заказ';
+  } catch (err) {
+    const error = err as { message?: string } | null;
+    const message = error?.message || 'Не удалось оформить заказ';
 
     return rejectWithValue(message);
   }
@@ -88,21 +84,15 @@ const constructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
-    addIngredient: (state, action: PayloadAction<TIngredient>) => {
+    addIngredient: (state, action: PayloadAction<TConstructorIngredient>) => {
       const ingredient = action.payload;
 
       if (ingredient.type === 'bun') {
-        state.items.bun = {
-          ...ingredient,
-          id: uuidv4()
-        };
+        state.items.bun = ingredient;
         return;
       }
 
-      state.items.ingredients.push({
-        ...ingredient,
-        id: uuidv4()
-      });
+      state.items.ingredients.push(ingredient);
     },
     removeIngredient: (state, action: PayloadAction<string>) => {
       state.items.ingredients = state.items.ingredients.filter(
@@ -159,3 +149,12 @@ export const {
 } = constructorSlice.actions;
 
 export const constructorReducer = constructorSlice.reducer;
+
+export const addIngredientWithId = (ingredient: TIngredient) => {
+  const ingredientWithId: TConstructorIngredient = {
+    ...ingredient,
+    id: uuidv4()
+  };
+
+  return addIngredient(ingredientWithId);
+};
