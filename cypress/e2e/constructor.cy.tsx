@@ -2,7 +2,6 @@
 
 describe('Конструктор бургера', () => {
   beforeEach(() => {
-    // Мокаем загрузку ингредиентов для всех тестов
     cy.intercept('GET', '**/ingredients', {
       fixture: 'ingredients.json'
     }).as('getIngredients');
@@ -21,8 +20,10 @@ describe('Конструктор бургера', () => {
         .find('.counter')
         .should('exist');
 
-      // плюс проверяем по тексту, что булка появилась среди элементов конструктора
-      cy.contains('Краторная булка N-200i').should('exist');
+      // булка содержится именно в конструкторе
+      cy.get('[data-testid="burger-constructor"]')
+        .contains('Краторная булка N-200i')
+        .should('exist');
     });
 
     it('должен добавлять начинку в конструктор', () => {
@@ -34,8 +35,10 @@ describe('Конструктор бургера', () => {
         .find('.counter')
         .should('exist');
 
-      // плюс проверяем по тексту, что начинка появилась среди элементов конструктора
-      cy.contains('Биокотлета из марсианской Магнолии').should('exist');
+      // начинка содержится именно в конструкторе
+      cy.get('[data-testid="burger-constructor"]')
+        .contains('Биокотлета из марсианской Магнолии')
+        .should('exist');
     });
   });
 
@@ -66,7 +69,6 @@ describe('Конструктор бургера', () => {
 
   describe('Создание заказа', () => {
     beforeEach(() => {
-      // Мокаем запрос пользователя и создание заказа
       cy.intercept('GET', '**/auth/user', { fixture: 'user.json' }).as(
         'getUser'
       );
@@ -74,7 +76,6 @@ describe('Конструктор бургера', () => {
         'createOrder'
       );
 
-      // Эмулируем авторизацию
       window.localStorage.setItem('refreshToken', 'test-refresh-token');
       cy.setCookie('accessToken', 'Bearer test-access-token');
 
@@ -93,9 +94,12 @@ describe('Конструктор бургера', () => {
       cy.get('[data-testid="ingredient-item"]').first().find('button').click();
       cy.get('[data-testid="ingredient-item"]').eq(1).find('button').click();
 
-      // перед оформлением заказа проверяем, что счётчики есть (ингредиенты в конструкторе)
-      cy.get('[data-testid="ingredient-item"]')
-        .find('.counter')
+      // убеждаемся, что элементы есть именно в конструкторе
+      cy.get('[data-testid="burger-constructor"]')
+        .contains('Краторная булка N-200i')
+        .should('exist');
+      cy.get('[data-testid="burger-constructor"]')
+        .contains('Биокотлета из марсианской Магнолии')
         .should('exist');
 
       // Оформляем заказ
@@ -111,9 +115,12 @@ describe('Конструктор бургера', () => {
       cy.get('[data-testid="modal"]').should('not.exist');
 
       // Проверяем, что конструктор очистился:
-      // счётчиков ингредиентов быть не должно
-      cy.get('[data-testid="ingredient-item"]')
-        .find('.counter')
+      // добавленных элементов больше нет в конструкторе
+      cy.get('[data-testid="burger-constructor"]')
+        .contains('Краторная булка N-200i')
+        .should('not.exist');
+      cy.get('[data-testid="burger-constructor"]')
+        .contains('Биокотлета из марсианской Магнолии')
         .should('not.exist');
     });
   });
